@@ -1,2 +1,6 @@
 StringCalculator.Tests/obj/
 StringCalculator/obj/
+StringCalculator.Tests/bin/
+StringCalculator/bin/
+.vscode/launch.json
+.vscode/tasks.json

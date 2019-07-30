@@ -22,10 +22,6 @@ namespace String.Calculator.Tests
         public int StringCalculator_Add_Tests(string numbers) => _sut.Add(numbers);
 
         [Test]
-        [TestCase("1,2,3")]
-        public void Throws_ArgumentException_When_Greater_Than_2_Numbers_Input(string numbers) => Assert.That(() => _sut.Add(numbers), Throws.TypeOf<ArgumentException>());
-
-        [Test]
         [TestCase("1,X")]
         [TestCase("1,%")]
         [TestCase("1, ")]

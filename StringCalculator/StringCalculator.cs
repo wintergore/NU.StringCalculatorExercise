@@ -5,10 +5,12 @@ namespace String.Calculator
 {
     public class StringCalculator
     {
-        public int Add(string numbers) {
+        public int Add(string numbers)
+        {
             if (string.IsNullOrEmpty(numbers)) return 0;
-            var numbersArray = numbers.Split(',');
-            return numbersArray.Select(number => int.Parse(number)).Sum(); //Parse will Throw exception for non-numbers.
+            return numbers.Split(new char[] { ',', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(number => int.Parse(number))
+            .Sum();
         }
     }
 }

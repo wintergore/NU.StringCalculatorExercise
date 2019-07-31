@@ -54,6 +54,7 @@ namespace String.Calculator.Tests
         [Test]
         [TestCase("//;\n;1", ExpectedResult = 1)]
         [TestCase("//;\n;1,2\n3", ExpectedResult = 6)]
+        [TestCase("//-\n-1-2", ExpectedResult = 3)]
         public int Returns_Sum_When_Custom_Delimiter_Specified(string numbers) => stringCalculator.Add(numbers);
 
         [Test]
@@ -67,11 +68,15 @@ namespace String.Calculator.Tests
 
         [Test]
         [TestCase("//;2")]
-        public void Throws_FormatException_When_Custom_Delimiter_Ending_Not_Found(string numbers) => Assert.That(() => stringCalculator.ValidateCustomDelimiter(numbers), Throws.TypeOf<FormatException>());
+        public void Throws_FormatException_When_Custom_Delimiter_Ending_Not_Found(string numbers) => Assert.That(() => stringCalculator.Add(numbers), Throws.TypeOf<FormatException>());
 
         [Test]
         [TestCase("//;;\n")]
-        public void Throws_FormatException_When_CustomDelimiter_Exceeds_1_Character(string numbers) => Assert.That(() => stringCalculator.ValidateCustomDelimiter(numbers), Throws.TypeOf<FormatException>());
+        public void Throws_FormatException_When_CustomDelimiter_Exceeds_1_Character(string numbers) => Assert.That(() => stringCalculator.Add(numbers), Throws.TypeOf<FormatException>());
 
+        [Test]
+        [TestCase("-1")]
+        [TestCase("-1,1")]
+        public void Throws_ArgumentOutOfRangeException_When_Negative_Number_Input(string numbers) => Assert.That(() => stringCalculator.Add(numbers), Throws.TypeOf<ArgumentOutOfRangeException>());
     }
 }

@@ -18,19 +18,27 @@ namespace String.Calculator
                 numbers = GetNumbersExcludingCustomDelimiter(numbers);
             }
 
-            return numbers.Split(delimiters.ToArray(), StringSplitOptions.RemoveEmptyEntries)
-            .Select(number => int.Parse(number))
-            .Sum();
+            var numbersSplitByDelimiter = SplitStringByDelimiters(numbers);
+
+            var negativeNumbers = GetNegativeNumbers(numbersSplitByDelimiter);
+            if (negativeNumbers.Any()) throw new ArgumentOutOfRangeException($"Negative not allowed {string.Join(",", negativeNumbers)}");
+
+            return numbersSplitByDelimiter.Sum();
         }
 
-        public void ValidateCustomDelimiter(string numbers)
+        private IEnumerable<int> SplitStringByDelimiters(string numbers) => numbers.Split(delimiters.ToArray(), StringSplitOptions.RemoveEmptyEntries)
+            .Select(number => int.Parse(number));
+
+        private static IEnumerable<int> GetNegativeNumbers(IEnumerable<int> numbers) => numbers.Where(number => number < 0);
+
+        private void ValidateCustomDelimiter(string numbers)
         {
-            var indexOfNewLine = numbers.IndexOf('\n'); 
+            var indexOfNewLine = numbers.IndexOf('\n');
             if (indexOfNewLine == -1) throw new FormatException("Custom delimiter ending not found '\n'");
             if (indexOfNewLine - customDelimiterIdentifier.Length > 1) throw new FormatException("Custom delimiter exceeds 1 character");
         }
 
-        public string GetNumbersExcludingCustomDelimiter(string numbers)
+        private string GetNumbersExcludingCustomDelimiter(string numbers)
         {
             delimiters.Add(numbers[customDelimiterIdentifier.Length]);
             return numbers.Substring(numbers.IndexOf('\n') + 1);

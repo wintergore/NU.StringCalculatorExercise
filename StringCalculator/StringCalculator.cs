@@ -23,6 +23,8 @@ namespace String.Calculator
             var negativeNumbers = GetNegativeNumbers(numbersSplitByDelimiter);
             if (negativeNumbers.Any()) throw new ArgumentOutOfRangeException($"Negative not allowed {string.Join(",", negativeNumbers)}");
 
+            numbersSplitByDelimiter = numbersSplitByDelimiter.Where(x => x <= 1000);
+
             return numbersSplitByDelimiter.Sum();
         }
 

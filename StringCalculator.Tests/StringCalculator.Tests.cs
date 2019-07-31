@@ -78,5 +78,9 @@ namespace String.Calculator.Tests
         [TestCase("-1")]
         [TestCase("-1,1")]
         public void Throws_ArgumentOutOfRangeException_When_Negative_Number_Input(string numbers) => Assert.That(() => stringCalculator.Add(numbers), Throws.TypeOf<ArgumentOutOfRangeException>());
+
+        [Test]
+        [TestCase("2,1000,1001", ExpectedResult = 1002)]
+        public int Returns_Sum_Of_Numbers_Not_Greater_Than_Limit(string numbers) => stringCalculator.Add(numbers);
     }
 }

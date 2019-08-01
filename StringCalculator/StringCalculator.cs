@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace String.Calculator
 {
@@ -8,41 +9,68 @@ namespace String.Calculator
     {
         private readonly List<string> delimiters = new List<string> { ",", "\n" };
         private const string customDelimiterIdentifier = "//";
-        public int Add(string numbers)
+        public int Add(string input)
         {
-            if (string.IsNullOrEmpty(numbers)) return 0;
+            if (string.IsNullOrEmpty(input)) return 0;
 
-            if (numbers.StartsWith(customDelimiterIdentifier))
+            if (input.StartsWith(customDelimiterIdentifier))
             {
-                delimiters.Add(GetCustomDelimiter(numbers));
-                numbers = GetNumbersExcludingCustomDelimiter(numbers);
+                delimiters.AddRange(GetCustomDelimiters(input));
+                input = GetNumbersExcludingCustomDelimiters(input);
             }
 
-            var numbersSplitByDelimiter = SplitStringByDelimiters(numbers);
+            var numbers = SplitStringByDelimiters(input);
 
-            ValidatePositiveNumbersOnly(numbersSplitByDelimiter);
-            
-            numbersSplitByDelimiter = numbersSplitByDelimiter.Where(x => x <= 1000);
+            ValidatePositiveNumbersOnly(numbers);
 
-            return numbersSplitByDelimiter.Sum();
+            return numbers.Where(x => x <= 1000).Sum();
         }
 
-        private string GetNumbersExcludingCustomDelimiter(string numbers)
-        {
-            return numbers.Substring(numbers.IndexOf('\n') + 1);
-        }
-
-        private string GetCustomDelimiter(string numbers)
+        private List<string> GetCustomDelimiters(string numbers)
         {
             var indexOfNewLine = numbers.IndexOf('\n');
             if (indexOfNewLine == -1) throw new FormatException("Custom delimiter ending not found '\n'");
 
             var customDelimiterArea = numbers.Substring(customDelimiterIdentifier.Length, indexOfNewLine - customDelimiterIdentifier.Length);
-            if (customDelimiterArea.Length <= 1) return customDelimiterArea;
+            if (customDelimiterArea.Length <= 1) return new List<string>{customDelimiterArea};
 
-            if (!customDelimiterArea.StartsWith("[") || !customDelimiterArea.EndsWith("]")) throw new FormatException("Custom delimiter exceeds 1 character");
-            return customDelimiterArea.Substring(1, customDelimiterArea.Length - 2);
+            return GetCustomDelimiterGroups(customDelimiterArea);
         }
+
+        /// <summary>
+        /// Get Each group [delim], accounting for passing braces as delims e.g. //[]]]\n.
+        /// </summary>
+        private List<string> GetCustomDelimiterGroups(string customDelimiterArea)
+        {
+            if (!customDelimiterArea.StartsWith("[") || !customDelimiterArea.EndsWith("]")) throw new FormatException($"Custom delimiter '{customDelimiterArea}' requires braces around delimiters e.g. [delim1][delim2]");
+            
+            var customDelimiters = new List<string>();
+            while(customDelimiterArea.Length > 0)
+            {
+                 var currentGroupsEndBraceIndex = customDelimiterArea.IndexOf(']');
+
+                 if (!customDelimiterArea.Substring(currentGroupsEndBraceIndex + 1).Contains('['))
+                 {
+                     currentGroupsEndBraceIndex = customDelimiterArea.Length - 1;
+                 }
+                 else if (customDelimiterArea.Substring(currentGroupsEndBraceIndex + 1)[0] != '[')
+                 {
+                    int i = 1;
+                    while(customDelimiterArea.Substring(currentGroupsEndBraceIndex + i) != "[" && currentGroupsEndBraceIndex + i != customDelimiterArea.Length)
+                    {
+                        i++;
+                    }
+                    currentGroupsEndBraceIndex = i;
+                 }
+
+                var delimiter = customDelimiterArea.Substring(1,currentGroupsEndBraceIndex - 1);
+                customDelimiters.Add(delimiter);
+                customDelimiterArea = customDelimiterArea.Substring(currentGroupsEndBraceIndex + 1);
+            }
+            return customDelimiters;
+        }
+
+        private string GetNumbersExcludingCustomDelimiters(string numbers) => numbers.Substring(numbers.IndexOf('\n') + 1);
 
         private void ValidatePositiveNumbersOnly(IEnumerable<int> numbersSplitByDelimiter)
         {

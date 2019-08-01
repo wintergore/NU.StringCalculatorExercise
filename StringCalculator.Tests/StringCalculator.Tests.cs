@@ -89,9 +89,29 @@ namespace String.Calculator.Tests
         [Test]
         [TestCase("//[***]\n1***2***3", ExpectedResult = 6)]
         [TestCase("//[;;]\n1;;2", ExpectedResult = 3)]
-        [TestCase("//[]]\n1]2", ExpectedResult = 3)]
-        [TestCase("//[]]]\n1]]2", ExpectedResult = 3)]
         public int Returns_Sum_When_Any_Length_Delimiter_Specified(string numbers) => stringCalculator.Add(numbers);
 
+        [Test]
+        [TestCase("//[]]\n1]2", ExpectedResult = 3)]
+        [TestCase("//[]]]\n1]]2", ExpectedResult = 3)]
+        public int Returns_Sum_When_Any_Length_Brace_Delimiter_Specified(string numbers) => stringCalculator.Add(numbers);
+
+
+        [Test]
+        [TestCase("//[*][%]\n1*2%3", ExpectedResult = 6)]
+        public int Returns_Sum_When_Multiple_Delimiters_Specified(string numbers) => stringCalculator.Add(numbers);
+
+        [Test]
+        [TestCase("//[*][%]\n*1*2%3", ExpectedResult = 6)]
+        public int Returns_Sum_When_Leading_Delimiter_Input(string numbers) => stringCalculator.Add(numbers);
+
+        [Test]
+        [TestCase("//[*][%]\n1*2%3*", ExpectedResult = 6)]
+        public int Returns_Sum_When_Trailing_Delimiter_Input(string numbers) => stringCalculator.Add(numbers);
+
+        [Test]
+        [TestCase("//[*][%]\n1,2%3***4", ExpectedResult = 10)]
+        [TestCase("//%\n1,2%3", ExpectedResult = 6)]
+        public int Returns_Sum_When_Default_And_Custom_Delimiters_Specified(string numbers) => stringCalculator.Add(numbers);
     }
 }

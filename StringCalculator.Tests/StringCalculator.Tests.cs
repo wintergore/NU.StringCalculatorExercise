@@ -60,6 +60,7 @@ namespace String.Calculator.Tests
         [Test]
         [TestCase("//;\n", ExpectedResult = 0)]
         [TestCase("//;\n\n,;", ExpectedResult = 0)]
+        [TestCase("//[]\n\n,", ExpectedResult = 0)]
         public int Returns_0_When_Only_Delimiters_Passed(string numbers) => stringCalculator.Add(numbers);
 
         [Test]
@@ -72,6 +73,8 @@ namespace String.Calculator.Tests
 
         [Test]
         [TestCase("//;;\n")]
+        [TestCase("//[;\n")]
+        [TestCase("//;]\n")]
         public void Throws_FormatException_When_CustomDelimiter_Exceeds_1_Character(string numbers) => Assert.That(() => stringCalculator.Add(numbers), Throws.TypeOf<FormatException>());
 
         [Test]
@@ -82,5 +85,13 @@ namespace String.Calculator.Tests
         [Test]
         [TestCase("2,1000,1001", ExpectedResult = 1002)]
         public int Returns_Sum_Of_Numbers_Not_Greater_Than_Limit(string numbers) => stringCalculator.Add(numbers);
+
+        [Test]
+        [TestCase("//[***]\n1***2***3", ExpectedResult = 6)]
+        [TestCase("//[;;]\n1;;2", ExpectedResult = 3)]
+        [TestCase("//[]]\n1]2", ExpectedResult = 3)]
+        [TestCase("//[]]]\n1]]2", ExpectedResult = 3)]
+        public int Returns_Sum_When_Any_Length_Delimiter_Specified(string numbers) => stringCalculator.Add(numbers);
+
     }
 }

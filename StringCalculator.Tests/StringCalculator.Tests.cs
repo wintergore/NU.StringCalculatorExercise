@@ -110,8 +110,14 @@ namespace String.Calculator.Tests
         public int Returns_Sum_When_Trailing_Delimiter_Input(string numbers) => stringCalculator.Add(numbers);
 
         [Test]
-        [TestCase("//[*][%]\n1,2%3***4", ExpectedResult = 10)]
+        [TestCase("//[***][%]\n1,2%3***4", ExpectedResult = 10)]
         [TestCase("//%\n1,2%3", ExpectedResult = 6)]
         public int Returns_Sum_When_Default_And_Custom_Delimiters_Specified(string numbers) => stringCalculator.Add(numbers);
+
+        [Test]
+        [TestCase("//[***][%%%]\n1,2%%%3***4", ExpectedResult = 10)]
+        [TestCase("//[*****][%%%]\n1,2%%%3*****4", ExpectedResult = 10)]
+        [TestCase("//[*****][%%%]\n1,2%%%3*****4\n5", ExpectedResult = 15)]
+        public int Returns_Sum_When_Muliple_Delimiters_With_Length_Longer_Than_1_Char_Input(string numbers) => stringCalculator.Add(numbers);
     }
 }
